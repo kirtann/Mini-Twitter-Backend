@@ -6,6 +6,7 @@ import { corsOptions } from "./config/config.js";
 import connectDB from "./config/database.js";
 
 import userRoute from "./routes/userRoute.js";
+import { errorMiddleware } from "./middlewares/error.js";
 
 dotenv.config({
   path: "./.env",
@@ -29,6 +30,8 @@ app.use("/api/v1/user", userRoute);
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
+
+app.use(errorMiddleware);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port} in ${mode} mode`);
