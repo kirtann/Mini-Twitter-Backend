@@ -4,9 +4,10 @@ import dotenv from "dotenv";
 import express from "express";
 import { corsOptions } from "./config/config.js";
 import connectDB from "./config/database.js";
+import { errorMiddleware } from "./middlewares/error.js";
 
 import userRoute from "./routes/userRoute.js";
-import { errorMiddleware } from "./middlewares/error.js";
+import tweetRoute from "./routes/tweetRoute.js";
 
 dotenv.config({
   path: "./.env",
@@ -26,6 +27,7 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 
 app.use("/api/v1/user", userRoute);
+app.use("/api/v1/tweet", tweetRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello World");

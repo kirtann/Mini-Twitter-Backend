@@ -2,7 +2,7 @@ import mongoose, { Schema, Types, model } from "mongoose";
 
 const tweetSchema = new Schema(
   {
-    message: {
+    content: {
       type: String,
     },
     creator: {

@@ -120,8 +120,10 @@ const addFollowing = tryCatch(async (req, res, next) => {
   }
 
   myData.following.push(userId);
+  usertoFollow.followers.push(req.userId);
 
   await myData.save();
+  await usertoFollow.save();
 
   return res.status(200).json({
     success: true,
@@ -130,4 +132,25 @@ const addFollowing = tryCatch(async (req, res, next) => {
   });
 });
 
-export { newUser, login, getMyProfile, logout, searchUser, addFollowing };
+const getUserDetail = tryCatch(async (req, res, next) => {
+  const { userId } = req.body;
+
+  const user = await User.findById(userId);
+
+  if (!user) return next(new ErrorHandler("User not found", 404));
+
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
+export {
+  newUser,
+  login,
+  getMyProfile,
+  logout,
+  searchUser,
+  addFollowing,
+  getUserDetail,
+};

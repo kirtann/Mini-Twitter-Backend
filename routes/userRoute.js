@@ -7,6 +7,7 @@ import {
 import {
   addFollowing,
   getMyProfile,
+  getUserDetail,
   login,
   logout,
   newUser,
@@ -28,5 +29,7 @@ app.get("/logout", logout);
 app.get("/search", searchUser);
 
 app.post("/addfollowing", addFollowing);
+
+app.post("/getuserdetail", getUserDetail);
 
 export default app;

@@ -5,10 +5,13 @@ import { ErrorHandler } from "../utils/utility.js";
 
 const createTweet = tryCatch(async (req, res, next) => {
   const { content } = req.body;
+  const creator = req.userId;
+
+  if (!creator) return next(new ErrorHandler("User not found", 404));
 
   const tweet = await Tweet.create({
     content,
-    user: req.userId,
+    creator,
   });
 
   res.status(201).json({
@@ -19,7 +22,7 @@ const createTweet = tryCatch(async (req, res, next) => {
 });
 
 const getMyTweets = tryCatch(async (req, res, next) => {
-  const tweets = await Tweet.find({ creator: req.userId }).populate("user");
+  const tweets = await Tweet.find({ creator: req.userId }).populate("creator");
 
   res.status(200).json({
     success: true,
@@ -27,17 +30,19 @@ const getMyTweets = tryCatch(async (req, res, next) => {
   });
 });
 
-const getFirendsTweets = tryCatch(async (req, res, next) => {
+const getFriendsTweets = tryCatch(async (req, res, next) => {
   const user = await User.findById(req.userId);
 
   if (!user) return next(new ErrorHandler("User not found", 404));
 
   const tweets = await Tweet.find({
-    creator: { $nin: [user.following] },
-  }).populate("user");
+    creator: { $in: user.following },
+  }).populate("creator");
 
   res.status(200).json({
     success: true,
     tweets,
   });
 });
+
+export { createTweet, getMyTweets, getFriendsTweets };
