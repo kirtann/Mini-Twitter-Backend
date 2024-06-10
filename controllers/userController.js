@@ -39,7 +39,7 @@ const login = tryCatch(async (req, res, next) => {
     return next(new ErrorHandler("Invalid Username Or Password", 404));
   }
 
-  const isMatch = await compare(password, user.password);
+  const isMatch = password === user.password;
 
   if (!isMatch) {
     return next(new ErrorHandler("Invalid Username Or Password", 404));
@@ -58,4 +58,15 @@ const login = tryCatch(async (req, res, next) => {
     });
 });
 
-export { newUser, login };
+const getMyProfile = tryCatch(async (req, res, next) => {
+  const user = await User.findById(req.userId);
+
+  if (!user) return next(new ErrorHandler("User not found", 404));
+
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
+export { newUser, login, getMyProfile };

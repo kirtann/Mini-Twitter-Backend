@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, Types, model } from "mongoose";
 
-const userSchema = new mongoose.Schema(
+const userSchema = new Schema(
   {
     name: {
       type: String,
@@ -21,13 +21,13 @@ const userSchema = new mongoose.Schema(
     },
     followers: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Types.ObjectId,
         ref: "User",
       },
     ],
     following: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Types.ObjectId,
         ref: "User",
       },
     ],
@@ -37,4 +37,4 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-export const User = mongoose.model("User", userSchema);
+export const User = model("User", userSchema);
