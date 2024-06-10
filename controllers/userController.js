@@ -69,4 +69,65 @@ const getMyProfile = tryCatch(async (req, res, next) => {
   });
 });
 
-export { newUser, login, getMyProfile };
+const logout = tryCatch(async (req, res, next) => {
+  return res
+    .status(200)
+    .cookie("auth-token", "", {
+      ...cookieOptions,
+      maxAge: 0,
+    })
+    .json({
+      success: true,
+      message: "User logout successful",
+    });
+});
+
+const searchUser = tryCatch(async (req, res, next) => {
+  const { name = "" } = req.query;
+
+  const myData = await User.findById(req.userId);
+
+  if (!myData) return next(new ErrorHandler("User not found", 404));
+
+  const allFollowings = myData.following;
+
+  const allUsersExceptMeAndFollowings = await User.find({
+    _id: { $nin: [...allFollowings, req.userId] },
+    name: { $regex: name, $options: "i" },
+  });
+
+  const searchResult = allUsersExceptMeAndFollowings;
+
+  return res.status(200).json({
+    success: true,
+    searchResult,
+  });
+});
+
+const addFollowing = tryCatch(async (req, res, next) => {
+  const { userId } = req.body;
+
+  const myData = await User.findById(req.userId);
+
+  if (!myData) return next(new ErrorHandler("User not found", 404));
+
+  const usertoFollow = await User.findById(userId);
+
+  if (!usertoFollow) return next(new ErrorHandler("User not found", 404));
+
+  if (myData.following.includes(userId)) {
+    return next(new ErrorHandler("Already following", 400));
+  }
+
+  myData.following.push(userId);
+
+  await myData.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Following added",
+    myData,
+  });
+});
+
+export { newUser, login, getMyProfile, logout, searchUser, addFollowing };
